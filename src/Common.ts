@@ -49,10 +49,21 @@ export default class Common {
   protected static async listArtisanPaths() {
     let config = workspace.getConfiguration("artisan")
     let additionalLocations = config.get<string | null | string[]>("location")
-    additionalLocations = typeof additionalLocations == 'string' ? new Array(1).concat(additionalLocations) : additionalLocations
+
+    if (typeof additionalLocations == 'string') {
+      additionalLocations = new Array(1).concat(additionalLocations)
+    }
+
     let list = this.artisanFileList.concat(additionalLocations.map(i => Uri.parse(i)))
-    if (list.length == 1) return list[0].fsPath
-    else if (list.length == 0) return 'artisan'
+
+    if (list.length === 0 || (list.length === 1 && additionalLocations.length === 0)) {
+      return 'artisan'
+    }
+
+    if (list.length == 1) {
+      return list[0].fsPath
+    }
+
     let artisanToUse = await Common.getListInput('Which artisan should execute this command?',
       list
         // Get the fs path from the URI

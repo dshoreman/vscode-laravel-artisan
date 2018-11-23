@@ -16,13 +16,14 @@ export default class Server extends Common {
     this.host = host.length > 0 ? host : 'localhost'
     this.port = port.length > 0 ? port : '8000'
 
-    // let command = `serve ${'--host=' + this.host} ${'--port=' + this.port}`
-
-    let artisanToUse = await this.listArtisanPaths()
+    let artisan = await this.listArtisanPaths()
+    if (artisan.includes(' ')) {
+      artisan = `"${artisan}"`
+    }
 
     this.terminal = window.createTerminal('Laravel Artisan Server')
     this.terminal.show()
-    this.terminal.sendText(`php "${artisanToUse}" serve ${'--host=' + this.host} ${'--port=' + this.port}`)
+    this.terminal.sendText(`php ${artisan} serve ${'--host=' + this.host} ${'--port=' + this.port}`)
     this.showMessage(`The server is now running on "http://${Server.host}:${Server.port}"`)
   }
 
